@@ -1,0 +1,65 @@
+package com.infotrixs.main;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import com.infotrixs.task.Currency;
+
+public class CurrencyConverterApp {
+	
+	public static String menu()throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		System.out.println("========================");
+		System.out.println("Currency Converter $$");
+		System.out.println("========================");
+		
+		System.out.println("1.Convert Currency");
+		System.out.println("2.Favourite Currency");
+		System.out.println("3.Exit");
+		
+		System.out.print("Select Option : ");
+		return br.readLine();
+	}	
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		Currency currency = new Currency();
+		
+		while(true)
+		{
+			switch(menu()) {
+				
+				case "1":
+					try {
+						System.out.print("Enter the Amount : ");
+						double amount = Double.parseDouble(br.readLine());
+						
+						System.out.print("Convert Currency From : ");
+						String from = br.readLine().trim().toUpperCase();
+						
+						System.out.print("to : ");
+						String to = br.readLine().trim().toUpperCase();
+						currency.convert(amount,from,to);
+					}
+					catch(NumberFormatException nfe) {
+						System.out.println("Enter Amount in Digits!");
+					}
+					
+					System.out.println("press enter...");
+					br.readLine();
+					break;
+				case "2":					
+					currency.favouriteCurrency();				
+					break;				
+				case "3":
+					System.out.println("program terminated .... status 0");
+					System.exit(0);
+					break;
+				default:
+					System.out.println("Invalid Input!!");
+					break;
+			}
+		}
+	}
+}

@@ -1,0 +1,5 @@
+INDEX VERSION 1.132+C:\Users\Sachi\OneDrive\Desktop\Infotrixs Task\Task1\.metadata\.plugins\org.eclipse.jdt.core
+1865797976.index
+100474458.index
+2984955796.index
+1414899858.index

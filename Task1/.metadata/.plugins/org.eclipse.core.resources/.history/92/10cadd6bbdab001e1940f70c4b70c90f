@@ -1,0 +1,56 @@
+package com.infotrixs.task;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Scanner;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+public class Converter {
+	private static String access_key = "152be12cb60c22ed5fc7a69cd25cc193";
+	private static String urlLink = "http://api.exchangerate.host/convert";
+	
+	private Converter() {
+	}
+	
+	public static void convert(double amount, String from, String to) {
+				
+		try {
+			
+			URL url = new URL(urlLink+"?access_key="+access_key+"&from="+from+"&to="+to+"&amount="+amount);
+			
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.connect();
+			
+			if(connection.getResponseCode() != 200) {
+				throw new RuntimeException("HttpResponseCode : "+ connection.getResponseCode());
+			}
+			else
+			{
+				String input = "";
+				Scanner scan = new Scanner(url.openStream());
+				
+				while(scan.hasNext()) {
+					input += scan.nextLine();
+				}
+				
+				scan.close();
+				
+				JSONObject object = (JSONObject) new JSONParser().parse(input);
+				
+				double result = (double)object.get("result");
+				System.out.println(amount+" "+ from +" = " +result+" "+to);
+			}
+		}
+		catch(UnknownHostException uhe) {
+			System.out.println("Connect to Internet**");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}	
+		
+	}
+}

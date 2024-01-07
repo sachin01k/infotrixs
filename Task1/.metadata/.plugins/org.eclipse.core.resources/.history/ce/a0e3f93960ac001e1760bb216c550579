@@ -1,0 +1,213 @@
+package com.infotrixs.task;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+
+import org.json.JSONObject;
+
+public class Currency {
+	
+	private HashMap<String, Double> exchangeRates;
+	private HashMap<String, Double> favouriteCurrencies;
+	
+	public Currency() {
+		exchangeRates = new HashMap<String,Double>();
+		favouriteCurrencies = new HashMap<String,Double>();
+	}
+	
+	private HttpURLConnection loadExchangeRates(String uri) {
+		
+		HttpURLConnection connection = null;
+		try {			
+			URL url = new URL(uri);
+			
+			connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.connect();			
+		}
+		catch(UnknownHostException uhe) {
+			System.out.println("Connect to Internet**");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return connection;
+	}
+	
+	private void exchangeRates() {
+		
+		try {
+			 String uri = "http://api.exchangerate.host/live?access_key=152be12cb60c22ed5fc7a69cd25cc193";
+				
+			 HttpURLConnection connection = loadExchangeRates(uri);
+				
+				if(connection.getResponseCode() != 200) {
+					throw new RuntimeException("HttpResponseCode : "+ connection.getResponseCode());
+				}
+				else
+				{
+					String input = "";
+					Scanner scan = new Scanner(connection.getInputStream());
+					
+					while(scan.hasNext()) {
+						input += scan.nextLine();
+					}
+					
+					scan.close();
+					
+					JSONObject object = new JSONObject(input).getJSONObject("quotes");					
+					Set<String> keys = object.keySet();
+					
+					for(String k : keys)
+					{
+						exchangeRates.put(k,object.getDouble(k));
+					}
+				}
+		}
+		catch(NullPointerException npe) {
+			System.out.println("Currency Code Input Invalid!!");
+		}
+		catch(UnknownHostException uhe) {
+			System.out.println("Connect to Internet**");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}	
+	}
+	
+	private void add(String currency) {
+		if(favouriteCurrencies.containsKey(currency))
+			System.out.println("Currency Already Exist!!");
+		else {
+			favouriteCurrencies.put(currency,exchangeRates.get(currency));
+			System.out.println("Currency Added Successfully!!");
+		}			
+	}
+	private void view() {
+		
+		if(favouriteCurrencies.size() != 0) {
+			System.out.println("Favourite Currency's");
+			for(Map.Entry<String,Double> entry : favouriteCurrencies.entrySet()) {
+				System.out.println(entry.getKey() + " : " + entry.getValue());
+			}
+		}
+		else {
+			System.out.println("No Data Found!!");
+		}
+	}
+	
+	private void update(String currency) {
+		Scanner scan = new Scanner(System.in);
+		if(currency != null) {
+			if(favouriteCurrencies.containsKey(currency)) {
+				
+				System.out.println("Enter New Rate : ");
+				double newRate = scan.nextDouble();
+				scan.close();
+				
+				favouriteCurrencies.replace(currency, newRate);
+				System.out.println("Currency List Updated!");
+			}
+			else {
+				System.out.println("Currency Doesn't Exist!");
+			}
+		}
+		else {
+			System.out.println("Invalid Input!!");
+		}
+	}
+	
+	public void convert(double amount, String from, String to) {
+		
+		try {		
+			String access_key = "152be12cb60c22ed5fc7a69cd25cc193";
+			String uri = "http://api.exchangerate.host/convert?access_key="+access_key+"&from="+from+"&to="+to+"&amount="+amount;
+			HttpURLConnection connection = loadExchangeRates(uri);
+			
+			if(connection.getResponseCode() != 200) {
+				throw new RuntimeException("HttpResponseCode : "+ connection.getResponseCode());
+			}
+			else
+			{
+				String input = "";
+				Scanner scan = new Scanner(connection.getInputStream());
+				
+				while(scan.hasNext()) {
+					input += scan.nextLine();
+				}
+				
+				scan.close();
+				
+				JSONObject object = new JSONObject(input);
+				
+				double result = (double)object.getDouble("result");
+				System.out.println(amount+" "+ from +" = " +result+" "+to);
+			}
+		}
+		catch(NullPointerException npe) {
+			System.out.println("Currency Code Input Invalid!!");
+		}
+		catch(UnknownHostException uhe) {
+			System.out.println("Connect to Internet**");
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}	
+		
+	}
+	
+	
+	public void favouriteCurrency() {
+					
+		Scanner scan = new Scanner(System.in);
+		exchangeRates();
+		while(true) {
+			System.out.println("Favourite Currency List");
+			System.out.println("Note: Default currency is USD, use USD as prefix while Adding Favourite Currency Code");
+			System.out.println("===============================================================");
+			System.out.println("1.Add Favourite Currency");
+			System.out.println("2.View Favourite Currency");
+			System.out.println("3.Update Favourite Currency");
+			System.out.println("4.Main Menu");
+			System.out.println("5.Exit Program");
+			
+			System.out.print("Select Option : ");		
+			
+			switch(scan.next()) {
+				
+				case "1":
+					System.out.print("Enter Currency Code: ");					
+					add(scan.next().toUpperCase());
+					
+					System.out.println("press enter...");
+					scan.nextLine();
+					scan.nextLine();
+					break;
+				case "2":
+					view();
+					System.out.println("press enter...");
+					scan.nextLine();
+					scan.nextLine();
+					break;
+				case "3":
+					System.out.println("Enter Currency Code : ");
+					update(scan.next().toUpperCase());
+					break;
+				case "4":
+					return;
+				case "5":
+					System.out.println("program terminated .... status 0");
+					System.exit(0);
+					break;
+				default:
+					System.out.println("Invalid Input!! try");
+			}
+		}
+	}
+}

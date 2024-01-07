@@ -1,0 +1,11 @@
+package com.infotrixs.task;
+
+public class Converter {
+	private static String access_key = "152be12cb60c22ed5fc7a69cd25cc193";
+	private static String urlLink = "http://api.exchangerate.host/convert";
+	
+	private Converter() {
+	}
+	
+	
+}

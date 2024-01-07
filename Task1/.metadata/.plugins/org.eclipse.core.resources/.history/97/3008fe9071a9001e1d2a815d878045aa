@@ -1,0 +1,20 @@
+package com.infotrixs.main;
+
+public class Converter {
+
+	public static void main(String[] args) {
+		
+		System.out.println("Currency Converter");
+		System.out.println("Select below Option");
+		System.out.println("=============================");
+		
+		System.out.println("1.Convert Currency");
+		System.out.println("2.Add");
+		System.out.println("3.View");
+		System.out.println("4.Update");
+		System.out.println("5.Show List");
+		System.out.println("6.Exit");
+
+	}
+
+}
